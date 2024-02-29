@@ -1,5 +1,5 @@
-How the exchange works:
+# How the exchange works:
 The exchange handles the SIGUSR1 signal for the trading, and SIGSHLD and SIGPIPE for detecting disconnections. The exchange will firstly store the list of products and list of traders. Each product will have a list of BUY and list of SELL that each contains a list of price (long, sorted in ascending order), and a list for orders (list of struct order) which are hashed. For every order, the exchange will check if there can be any orders to be filled (every BUY will check the list of SELL from the first index and every SELL will check the list of BUY from the last index). An order struct contains a pointer to the trader, so when an order is filled, the trader position can be updated (values and quantity). If the order is not filled, the order will be stored in the respective BUY/SELL list for the product.
 
-Design decisions for the trader:
+# Design decisions for the trader:
 The SIGUSR1 signal handler is registered, which allows the checking of a SIGUSR1 signal. When a SIGUSR1 signal is detected, the trader reads the exchange pipe. If the message is a MARKET BUY, the trader writes to the trader pipe with the MARKET BUY request and send a SIGUSR1 signal. The trader will send the signal every 2 seconds so it makes sure the exchange will receive the SIGUSR1 signal, hence making it fault-tolerant. 
